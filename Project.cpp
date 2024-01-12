@@ -4,6 +4,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iomanip>
+#include <string>
 using namespace std;
 
 struct Student {
@@ -14,7 +15,7 @@ struct Student {
     string dateOfBirth;
     string mobileNumber;
     string email;
-    string bloodGroup;  
+    string bloodGroup;
     long long registrationNumber;
 
 };
@@ -39,7 +40,7 @@ bool readDataFromCSV(vector<Student>& students) {
         getline(ss, dateOfBirth, ',');
         getline(ss, mobileNumber, ',');
         getline(ss, email, ',');
-        getline(ss, bloodGroup, ','); 
+        getline(ss, bloodGroup, ',');
         getline(ss, regNumberStr, ',');
 
         long long registrationNumber;
@@ -58,7 +59,7 @@ bool saveDataToCSV(const vector<Student>& students) {
         return false;
     }
 
-    file << "Name,Father Name,Mother Name,Address,Date of Birth,Mobile Number,Email,Blood Group,Registration Number\n"; 
+    file << "Name,Father Name,Mother Name,Address,Date of Birth,Mobile Number,Email,Blood Group,Registration Number\n";
 
     for (const auto& student : students) {
         file << student.name << "," << student.fatherName << "," << student.motherName << ","
@@ -132,7 +133,7 @@ void sortStudents(vector<Student>& students, Comparator compareFunction) {
     sort(students.begin(), students.end(), compareFunction);
 }
 
-void sortAndSaveByRegistrationNumber(vector<Student>& students) {
+void sortByRegistrationNumber(vector<Student>& students) {
     sortStudents(students, compareByRegistrationNumber);
 
     if (saveDataToCSV(students)) {
@@ -142,7 +143,7 @@ void sortAndSaveByRegistrationNumber(vector<Student>& students) {
     }
 }
 
-void sortAndSaveByName(vector<Student>& students) {
+void sortByName(vector<Student>& students) {
     sort(students.begin(), students.end(), [](const Student& a, const Student& b) {
         return a.name < b.name;
     });
@@ -155,8 +156,10 @@ void sortAndSaveByName(vector<Student>& students) {
 }
 void searchByName(const vector<Student>& students, const string& searchName) {
     bool found = false;
+    string name=searchName;
+    transform(name.begin(), name.end(),name.begin(),::toupper);
     for (const auto& student : students) {
-        if (student.name == searchName) {
+        if (student.name == name) {
             cout << "List of Students:\n";
     cout << "----------------------------------------------------------------------"
          << "--------------------------------------------------------------------------------------------------\n";
@@ -276,7 +279,7 @@ void editStudentData(vector<Student>& students, long long regNumber) {
                   cout<<"Enter valid optin"<<endl;
                   break;
             }
-            saveDataToCSV(students); 
+            saveDataToCSV(students);
             cout << "Student data updated successfully.\n";
             return;
         }
@@ -291,7 +294,7 @@ void deleteStudentByRegNumber(vector<Student>& students, long long regNumber) {
 
     if (it != students.end()) {
         students.erase(it, students.end());
-        saveDataToCSV(students); 
+        saveDataToCSV(students);
         cout << "Student with registration number '" << regNumber << "' deleted successfully.\n";
     } else {
         cout << "Student with registration number '" << regNumber << "' not found.\n";
@@ -340,6 +343,7 @@ int main() {
                                 cout << "Enter the Name to search: ";
                                 cin.ignore();
                                 getline(cin, nameToSearch);
+                                //nameToSearch = toupper(nameToSearch);
                                 searchByName(students, nameToSearch);
                                 break;
                                 }
@@ -364,10 +368,10 @@ int main() {
                 break;
             }
             case 5:
-                sortAndSaveByName(students);
+                sortByName(students);
                 break;
             case 6:
-                sortAndSaveByRegistrationNumber(students);
+                sortByRegistrationNumber(students);
                 break;
             case 7: {
                 long long regNumToDelete;
