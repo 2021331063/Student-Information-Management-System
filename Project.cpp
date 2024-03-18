@@ -1,10 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <sstream>
-#include <algorithm>
-#include <iomanip>
-#include <string>
+#include <bits/stdc++.h>
 using namespace std;
 
 struct Student {
@@ -199,6 +193,39 @@ void searchByRegNumber(const vector<Student>& students, long long regNumber) {
         cout << "Student with registration number '" << regNumber << "' not found.\n";
     }
 }
+vector<Student> searchByBloodGroup(const vector<Student>& students, const string& bloodGroup) {
+    vector<Student> result;
+
+    for (const auto& student : students) {
+        if (student.bloodGroup == bloodGroup) {
+            result.push_back(student);
+        }
+    }
+
+    return result;
+}
+
+void displaySearchResults(const vector<Student>& results) {
+    if (results.empty()) {
+        cout << "No students found with the given blood group.\n";
+    } else {
+        cout << "Students with the given blood group:\n";
+        cout << "List of Students:\n";
+    cout << "----------------------------------------------------------------------"
+         << "--------------------------------------------------------------------------------------------------\n";
+    cout << "|             Name|    Father's Name|    Mother's Name|"
+         << "       Address| Date of Birth|    Mobile Number|                           Email|    Blood Group|    Reg. Number|\n";
+    cout << "----------------------------------------------------------------------"
+         << "--------------------------------------------------------------------------------------------------\n";
+                  for (const auto& student : results) {
+
+            displayStudent(student);
+        }
+             cout << "----------------------------------------------------------------------"
+         << "--------------------------------------------------------------------------------------------------\n";
+
+    }
+}
 
 void editStudentData(vector<Student>& students, long long regNumber) {
     for (auto& student : students) {
@@ -287,6 +314,8 @@ void editStudentData(vector<Student>& students, long long regNumber) {
 
     cout << "Student with registration number '" << regNumber << "' not found.\n";
 }
+
+
 void deleteStudentByRegNumber(vector<Student>& students, long long regNumber) {
     auto it = remove_if(students.begin(), students.end(), [regNumber](const Student& student) {
         return student.registrationNumber == regNumber;
@@ -311,7 +340,7 @@ int main() {
     int choice = 0;
     int choicets = 0;
     string nameToSearch;
-    while (choice != 8) {
+    while (choice != 9) {
         cout << "\nStudent Information Management System\n";
 
         cout << " 1. Display All Students\n";
@@ -320,8 +349,9 @@ int main() {
         cout << " 4. Edit Student Data\n";
         cout << " 5. Sort  Data by Name\n";
         cout << " 6. Sort  Data by Registration Number\n";
-        cout << " 7. Delete Student\n";
-        cout << " 8. Exit\n";
+        cout << " 7. Delete Student\n 8. Find students with a bloodgroup\n";
+
+        cout << " 9. Exit\n";
 
         cout << "Enter your choice: ";
         cin >> choice;
@@ -380,9 +410,19 @@ int main() {
                 deleteStudentByRegNumber(students, regNumToDelete);
                 break;
             }
-            case 8:
+
+            case 8:{
+               string searchBlood;
+               cout<<"Enter blood group to search: ";
+               cin>>searchBlood;
+               vector<Student> searchResults = searchByBloodGroup(students,searchBlood);
+               displaySearchResults(searchResults);
+               break;
+            }
+            case 9:
                 cout << "Exiting...\n";
                 break;
+
             default:
                 cout << "Invalid choice. Please enter a valid option.\n";
                 break;
