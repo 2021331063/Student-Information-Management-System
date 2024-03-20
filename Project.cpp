@@ -65,26 +65,57 @@ bool saveDataToCSV(const vector<Student>& students) {
     return true;
 }
 
+int calculateAge(const string& dateOfBirth) {
+    try {
+        stringstream ss(dateOfBirth);
+        string token;
+        vector<int> dob;
+        while (getline(ss, token, '/')) {
+            dob.push_back(stoi(token));
+        }
+
+        time_t now = time(0);
+        tm* ltm = localtime(&now);
+        int currentYear = 1900 + ltm->tm_year;
+        int currentMonth = 1 + ltm->tm_mon;
+        int currentDay = ltm->tm_mday;
+
+        int age = currentYear - dob[2];
+        if (currentMonth < dob[1] || (currentMonth == dob[1] && currentDay < dob[0])) {
+            age--;
+        }
+
+        return age;
+    } catch (const std::invalid_argument& e) {
+        cerr << "Invalid date format encountered while calculating age: " << dateOfBirth << endl;
+        return -1;
+    }
+}
+
+
 void displayStudent(const Student& student) {
+    int age = calculateAge(student.dateOfBirth);
     cout << "| " << setw(15) << student.name
          << " | " << setw(15) << student.fatherName
          << " | " << setw(15) << student.motherName
-         << " | " << setw(12) << student.address
+         << " | " << setw(11) << student.address
          << " | " << setw(12) << student.dateOfBirth
-         << " | " << setw(15) << student.mobileNumber
+         << " | " << setw(5) <<age
+         << " | " << setw(12) << student.mobileNumber
          << " | " << setw(30) << student.email
-         << " | " << setw(13) << student.bloodGroup
+         << " | " << setw(9) << student.bloodGroup
          << " | " << setw(13) << student.registrationNumber
          << " |\n";
 }
+
 void displayAllStudents(const vector<Student>& students) {
     cout << "List of Students:\n";
-    cout << "----------------------------------------------------------------------"
-         << "--------------------------------------------------------------------------------------------------\n";
+    cout << "---------------------------------------------------------------------"
+         << "---------------------------------------------------------------------------------------------------\n";
     cout << "|             Name|    Father's Name|    Mother's Name|"
-         << "       Address| Date of Birth|    Mobile Number|                           Email|    Blood Group|    Reg. Number|\n";
-    cout << "----------------------------------------------------------------------"
-         << "--------------------------------------------------------------------------------------------------\n";
+         << "      Address| Date of Birth|    Age| Mobile Number|                           Email|Blood Group|    Reg. Number|\n";
+    cout << "-----------------------------------------------------------------------"
+         << "-------------------------------------------------------------------------------------------------\n";
 
     for (const auto& student : students) {
         displayStudent(student);
@@ -118,6 +149,8 @@ void addStudent(vector<Student>& students) {
     students.push_back(newStudent);
     saveDataToCSV(students);
 }
+
+
 bool compareByRegistrationNumber(const Student& a, const Student& b) {
     return a.registrationNumber < b.registrationNumber;
 }
@@ -148,6 +181,8 @@ void sortByName(vector<Student>& students) {
         cout << "Failed to save sorted data to CSV file.\n";
     }
 }
+
+
 void searchByName(const vector<Student>& students, const string& searchName) {
     bool found = false;
     string name=searchName;
@@ -193,6 +228,7 @@ void searchByRegNumber(const vector<Student>& students, long long regNumber) {
         cout << "Student with registration number '" << regNumber << "' not found.\n";
     }
 }
+
 vector<Student> searchByBloodGroup(const vector<Student>& students, const string& bloodGroup) {
     vector<Student> result;
 
@@ -210,7 +246,7 @@ void displaySearchResults(const vector<Student>& results) {
         cout << "No students found with the given blood group.\n";
     } else {
         cout << "Students with the given blood group:\n";
-        cout << "List of Students:\n";
+        //cout << "List of Students:\n";
     cout << "----------------------------------------------------------------------"
          << "--------------------------------------------------------------------------------------------------\n";
     cout << "|             Name|    Father's Name|    Mother's Name|"
@@ -231,7 +267,7 @@ void editStudentData(vector<Student>& students, long long regNumber) {
     for (auto& student : students) {
         if (student.registrationNumber == regNumber) {
             cout << "Now edit what you want: " <<endl<<"1.Name"<<endl<<"2.Father name"<<endl<<"3.Mother name"
-            <<endl<<"4.Date of Birth"<<endl<<"5.Address"<<endl<<"6.Mobile Number"<<endl<<"7.Email"
+            <<endl<<"4.Address"<<endl<<"5.Date of birth"<<endl<<"6.Mobile Number"<<endl<<"7.Email"
             <<endl<<"8.Bloodbroup"<<endl<<"9.All"<<endl;
             int s;
             cout<<"Enter the button with which data you want to edit: ";
@@ -341,7 +377,7 @@ int main() {
     int choicets = 0;
     string nameToSearch;
     while (choice != 9) {
-        cout << "\nStudent Information Management System\n";
+        cout << "Student Information Management System\n";
 
         cout << " 1. Display All Students\n";
         cout << " 2. Add Student\n";
